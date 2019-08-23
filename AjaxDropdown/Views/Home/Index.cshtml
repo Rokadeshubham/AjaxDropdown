@@ -1,0 +1,94 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+}
+<html>
+<head>
+
+     <script src="~/scripts/jquery-1.10.2.js"></script>
+    <script type="text/javascript">
+
+
+    $(function () {
+
+        AjaxCall('/Home/GetCountries', null).done(function (response) {
+            if (response.length > 0) {
+                $('#countryDropdownList').html('');
+                var options = '';
+                options += '<option value="Select">Select</option>';
+                for (var i = 0; i < response.length; i++) {
+                    options += '<option value="' + response[i] + '">' + response[i] + '</option>';
+                }
+                $('#countryDropdownList').append(options);
+
+            }
+        }).fail(function (error) {
+            alert(error.StatusText);
+        });
+
+        $('#countryDropdownList').on("change", function () {
+            var country = $('#countryDropdownList').val();
+            var obj = { country: country };
+            AjaxCall('/Home/GetStates', JSON.stringify(obj), 'POST').done(function (response) {
+                if (response.length > 0) {
+                    $('#stateDropdownList').html('');
+                    var options = '';
+                    options += '<option value="Select">Select</option>';
+                    for (var i = 0; i < response.length; i++) {
+                        options += '<option value="' + response[i] + '">' + response[i] + '</option>';
+                    }
+                    $('#stateDropdownList').append(options);
+
+                }
+            }).fail(function (error) {
+                alert(error.StatusText);
+            });
+        });
+
+    });
+
+    function AjaxCall(url, data, type) {
+        return $.ajax({
+            url: url,
+            type: type ? type : 'GET',
+            data: data,
+            contentType: 'application/json'
+        });
+    }
+    </script>
+
+</head>
+<body>
+
+
+    <h2>Index</h2>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-4 form-horizontal">
+                    <div class="form-control">
+                        <label class="col-md-6">Country</label>
+                        <div class="col-md-6">
+                            <select id="countryDropdownList" class="form-control">
+                                <option value="select">select</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-control">
+                        <label class="col-md-6">State</label>
+                        <div class="col-md-6">
+                            <select id="stateDropdownList" class="form-control">
+                                <option value="select">select</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</body>
+</html>
+
